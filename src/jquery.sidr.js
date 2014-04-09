@@ -109,7 +109,7 @@
         if(displace){
           $body.addClass('sidr-animating').css({
             width: $body.width(),
-            position: 'absolute'
+            position: 'fixed'
           }).animate(bodyAnimation, speed, function() {
             $(this).addClass(bodyClass);
           });
@@ -286,25 +286,18 @@
       if ( ! data ) {
 
         $this.data('sidr', name);
-        if('ontouchstart' in document.documentElement) {
-          $this.bind('touchstart', function(e) {
-            var theEvent = e.originalEvent.touches[0];
-            this.touched = e.timeStamp;
-          });
-          $this.bind('touchend', function(e) {
-            var delta = Math.abs(e.timeStamp - this.touched);
-            if(delta < 200) {
-              e.preventDefault();
-              methods.toggle(name);
+        
+        $this.on('touchend click', function (e) {
+            if ($(this).data("moved")) {
+                $(this).removeData("moved")
+            } else {
+                e.preventDefault();
+                e.stopPropagation();
+                methods.toggle(name);
             }
-          });
-        }
-        else {
-          $this.click(function(e) {
-            e.preventDefault();
-            methods.toggle(name);
-          });
-        }
+        }).on('touchmove', function (e) {
+            $(this).data("moved", true);
+        });
       }
     });
   };
